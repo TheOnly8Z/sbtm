@@ -10,6 +10,7 @@
 		"*.url",
 		"*.psd",
 		"_workfolder/*",
+		".gitignore",
 		"sbtm.jpg",
 		"sbtm.png"
 	]
