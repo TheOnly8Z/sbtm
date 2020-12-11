@@ -1,0 +1,16 @@
+{
+	"title" :	"Sandbox Team Manager",
+	"type"  :	"tool",
+	"tags"  :	["fun","comic"],
+	"ignore":
+	[
+		"*.cmd",
+		"*.ini",
+		"*.lnk",
+		"*.url",
+		"*.psd",
+		"_workfolder/*",
+		"sbtm.jpg",
+		"sbtm.png"
+	]
+}
