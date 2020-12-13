@@ -11,7 +11,8 @@
 		"*.psd",
 		"_workfolder/*",
 		".gitignore",
-		".README",
+		"README.md",
+		".git/*",
 		"sbtm.jpg",
 		"sbtm.png"
 	]
