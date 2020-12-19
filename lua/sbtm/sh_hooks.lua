@@ -1,11 +1,11 @@
 hook.Add("PlayerShouldTakeDamage", "SBTM", function(ply, atk)
     if IsValid(ply) and IsValid(atk) and atk:IsPlayer() then
-        if GetConVar("sbtm_nofriendlyfire"):GetBool() and ply:Team() == atk:Team()
+        if GetConVar("sbtm_nofriendlyfire"):GetBool() and ply:Team() == atk:Team() and ply ~= atk
                 and ply:Team() >= SBTM_RED and ply:Team() <= SBTM_YEL
                 and atk:Team() >= SBTM_RED and atk:Team() <= SBTM_YEL
                 and (not SBMG or not SBMG:GameHasTag(SBMG_TAG_FORCE_FRIENDLY_FIRE)) then
             return false
-        elseif GetConVar("sbtm_neutralunassigned"):GetBool() and
+        elseif GetConVar("sbtm_neutralunassigned"):GetBool() and ply ~= atk and
                 (ply:Team() == TEAM_UNASSIGNED and atk:Team() >= SBTM_RED and atk:Team() <= SBTM_YEL
                 or atk:Team() == TEAM_UNASSIGNED and ply:Team() >= SBTM_RED and ply:Team() <= SBTM_YEL) then
             return false
