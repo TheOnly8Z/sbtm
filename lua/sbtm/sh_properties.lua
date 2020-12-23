@@ -111,6 +111,7 @@ properties.Add("sbtm_ent_setteam", {
         local id = net.ReadUInt(12)
         if not self:Filter(ent, ply) then return end
         ent:SetTeam(id)
+        if ent.OnSetTeam then ent:OnSetTeam(id, ply) end
     end,
 })
 
