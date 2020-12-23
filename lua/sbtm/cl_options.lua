@@ -6,14 +6,6 @@ local function colormixer(pnl, t_name)
     p:SetConVarB("sbtm_clr_" .. t_name .. "_b")
     p:SetAlphaBar(false)
     pnl:AddItem(p)
-    --[[]
-    local p = pnl:AddControl("color", {
-        label = "#sbtm.cvar.clr_" .. t_name,
-        red = "sbtm_clr_" .. t_name .. "_r",
-        green = "sbtm_clr_" .. t_name .. "_g",
-        blue = "sbtm_clr_" .. t_name .. "_b"
-    })
-    ]]
 end
 
 hook.Add("PopulateToolMenu", "SBTM", function()
@@ -35,6 +27,27 @@ hook.Add("PopulateToolMenu", "SBTM", function()
         pnl:CheckBox("#sbtm.cvar.teamnpcs_color", "sbtm_teamnpcs_color")
         pnl:Help("")
         pnl:Help("#sbtm.nameclrhelp")
+        local resetbtn = vgui.Create("DButton", pnl)
+        resetbtn:SetText("#sbtm.nameclrclear")
+        resetbtn.DoClick = function(p)
+            RunConsoleCommand("sbtm_name_red", "Red Team")
+            RunConsoleCommand("sbtm_name_blue", "Blue Team")
+            RunConsoleCommand("sbtm_name_green", "Green Team")
+            RunConsoleCommand("sbtm_name_yellow", "Yellow Team")
+            RunConsoleCommand("sbtm_clr_red_r", "255")
+            RunConsoleCommand("sbtm_clr_red_g", "0")
+            RunConsoleCommand("sbtm_clr_red_b", "0")
+            RunConsoleCommand("sbtm_clr_blue_r", "0")
+            RunConsoleCommand("sbtm_clr_blue_g", "0")
+            RunConsoleCommand("sbtm_clr_blue_b", "255")
+            RunConsoleCommand("sbtm_clr_green_r", "0")
+            RunConsoleCommand("sbtm_clr_green_g", "255")
+            RunConsoleCommand("sbtm_clr_green_b", "0")
+            RunConsoleCommand("sbtm_clr_yellow_r", "255")
+            RunConsoleCommand("sbtm_clr_yellow_g", "255")
+            RunConsoleCommand("sbtm_clr_yellow_b", "0")
+        end
+        pnl:AddItem(resetbtn)
         pnl:TextEntry("#sbtm.cvar.name_red", "sbtm_name_red")
         colormixer(pnl, "red")
         pnl:TextEntry("#sbtm.cvar.name_blue", "sbtm_name_blue")
@@ -45,5 +58,6 @@ hook.Add("PopulateToolMenu", "SBTM", function()
         colormixer(pnl, "yellow")
         pnl:Help("")
         pnl:Help("#sbtm.authorhelp")
+        pnl:Help("")
     end)
 end)
