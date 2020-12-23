@@ -1,3 +1,21 @@
+local function colormixer(pnl, t_name)
+    local p = vgui.Create("DColorMixer", pnl)
+    p:SetLabel("#sbtm.cvar.clr_" .. t_name)
+    p:SetConVarR("sbtm_clr_" .. t_name .. "_r")
+    p:SetConVarG("sbtm_clr_" .. t_name .. "_g")
+    p:SetConVarB("sbtm_clr_" .. t_name .. "_b")
+    p:SetAlphaBar(false)
+    pnl:AddItem(p)
+    --[[]
+    local p = pnl:AddControl("color", {
+        label = "#sbtm.cvar.clr_" .. t_name,
+        red = "sbtm_clr_" .. t_name .. "_r",
+        green = "sbtm_clr_" .. t_name .. "_g",
+        blue = "sbtm_clr_" .. t_name .. "_b"
+    })
+    ]]
+end
+
 hook.Add("PopulateToolMenu", "SBTM", function()
     spawnmenu.AddToolMenuOption("Utilities", "Admin", "SBTM", "#sbtm.title", "", "", function(pnl)
         pnl:Help("#sbtm.menuhelp")
@@ -15,6 +33,16 @@ hook.Add("PopulateToolMenu", "SBTM", function()
         pnl:CheckBox("#sbtm.cvar.teamnpcs", "sbtm_teamnpcs")
         pnl:ControlHelp("#sbtm.cvar.teamnpcs.desc")
         pnl:CheckBox("#sbtm.cvar.teamnpcs_color", "sbtm_teamnpcs_color")
+        pnl:Help("")
+        pnl:Help("#sbtm.nameclrhelp")
+        pnl:TextEntry("#sbtm.cvar.name_red", "sbtm_name_red")
+        colormixer(pnl, "red")
+        pnl:TextEntry("#sbtm.cvar.name_blue", "sbtm_name_blue")
+        colormixer(pnl, "blue")
+        pnl:TextEntry("#sbtm.cvar.name_green", "sbtm_name_green")
+        colormixer(pnl, "green")
+        pnl:TextEntry("#sbtm.cvar.name_yellow", "sbtm_name_yellow")
+        colormixer(pnl, "yellow")
         pnl:Help("")
         pnl:Help("#sbtm.authorhelp")
     end)

@@ -62,3 +62,9 @@ hook.Add("PlayerSelectSpawn", "SBTM", function(ply)
     end
     if #spawns > 0 then return spawns[math.random(1, #spawns)] end
 end)
+
+hook.Add("PlayerSpawn", "SBTM", function(ply)
+    if GetConVar("sbtm_setplayercolor"):GetBool() then
+        SBTM:SetPlayerColor(ply, ply:Team())
+    end
+end)

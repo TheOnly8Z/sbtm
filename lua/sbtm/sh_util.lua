@@ -115,3 +115,21 @@ function SBTM:UnassignAll()
         SBTM:SetTeam(p, TEAM_UNASSIGNED, "#sbtm.hint.team_set_force")
     end
 end
+
+function SBTM:ConVarTeamColor(t)
+    local cvar = "sbtm_clr_"
+    if t == SBTM_RED then
+        cvar = cvar .. "red"
+    elseif t == SBTM_BLU then
+        cvar = cvar .. "blue"
+    elseif t == SBTM_GRN then
+        cvar = cvar .. "green"
+    elseif t == SBTM_YEL then
+        cvar = cvar .. "yellow"
+    end
+    local clr = Color(255, 255, 255)
+    clr.r = GetConVar(cvar .. "_r"):GetInt()
+    clr.g = GetConVar(cvar .. "_g"):GetInt()
+    clr.b = GetConVar(cvar .. "_b"):GetInt()
+    return clr
+end
