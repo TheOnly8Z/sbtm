@@ -25,3 +25,7 @@ for _, v in pairs(file.Find("sbtm/*", "LUA")) do
         AddCSLuaFile("sbtm/" .. v)
     end
 end
+
+if CLIENT then
+    include("includes/modules/outline.lua")
+end

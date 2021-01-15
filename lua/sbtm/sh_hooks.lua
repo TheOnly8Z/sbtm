@@ -1,20 +1,19 @@
 hook.Add("PlayerShouldTakeDamage", "SBTM", function(ply, atk)
     if IsValid(ply) and IsValid(atk) and atk:IsPlayer() then
         if GetConVar("sbtm_nofriendlyfire"):GetBool() and ply:Team() == atk:Team() and ply ~= atk
-                and ply:Team() >= SBTM_RED and ply:Team() <= SBTM_YEL
-                and atk:Team() >= SBTM_RED and atk:Team() <= SBTM_YEL
+                and SBTM:IsTeamed(ply) and SBTM:IsTeamed(atk)
                 and (not SBMG or not SBMG:GameHasTag(SBMG_TAG_FORCE_FRIENDLY_FIRE)) then
             return false
         elseif GetConVar("sbtm_neutralunassigned"):GetBool() and ply ~= atk and
-                (ply:Team() == TEAM_UNASSIGNED and atk:Team() >= SBTM_RED and atk:Team() <= SBTM_YEL
-                or atk:Team() == TEAM_UNASSIGNED and ply:Team() >= SBTM_RED and ply:Team() <= SBTM_YEL) then
+                (ply:Team() == TEAM_UNASSIGNED and SBTM:IsTeamed(atk)
+                or atk:Team() == TEAM_UNASSIGNED and SBTM:IsTeamed(ply)) then
             return false
         end
     end
 end)
 
 hook.Add("PostPlayerDeath", "SBTM", function(ply)
-    if (GetConVar("sbtm_deathunassign"):GetBool() or (SBMG and SBMG:GameHasTag(SBMG_TAG_UNASSIGN_ON_DEATH))) and ply:Team() >= SBTM_RED and ply:Team() <= SBTM_YEL then
+    if (GetConVar("sbtm_deathunassign"):GetBool() or (SBMG and SBMG:GameHasTag(SBMG_TAG_UNASSIGN_ON_DEATH))) and SBTM:IsTeamed(ply) then
         SBTM:SetTeam(ply, TEAM_UNASSIGNED, "#sbtm.hint.death_unassign")
     end
 end)
@@ -35,7 +34,7 @@ hook.Add("OnEntityCreated", "SBTM", function(ent)
                     end
                 end
                 for _, ply in pairs(player.GetAll()) do
-                    if ply:Team() >= SBTM_RED and ply:Team() <= SBTM_YEL then
+                    if SBTM:IsTeamed(ply) then
                         ent:AddEntityRelationship(ply, ply:Team() == id and D_LI or D_HT, 9999)
                     end
                 end
@@ -96,11 +95,7 @@ if SERVER then
                         spawn:SetPos(ent:GetPos() + Vector(0, 0, 1))
                         spawn:SetAngles(ent:GetAngles())
                         spawn:Spawn()
-                        if t == 0 then
-                            spawn:SetTeam(ent:GetInternalVariable("TeamNum") + 99)
-                        else
-                            spawn:SetTeam(t)
-                        end
+                        spawn:SetTeam(t == 0 and (ent:GetInternalVariable("TeamNum") + 99) or t)
                     end
                 end
             end
@@ -122,3 +117,12 @@ if SERVER then
         end
     end )
 end
+
+hook.Add("PreDrawOutlines", "SBTM", function()
+    local cvar = GetConVar("cl_sbtm_teamoutline"):GetInt()
+    if cvar > 0 and SBTM:IsTeamed(LocalPlayer()) and (not SBMG or not SBMG:GameHasTag(SBMG_TAG_FORCE_FRIENDLY_FIRE)) and
+            (cvar == 1 or (SBMG and SBMG:GetActiveGame())) then
+        local plys = team.GetPlayers(LocalPlayer():Team())
+        outline.Add(plys, team.GetColor(LocalPlayer():Team()), OUTLINE_MODE_NOTVISIBLE)
+    end
+end)

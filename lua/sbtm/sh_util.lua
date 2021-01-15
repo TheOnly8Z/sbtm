@@ -1,3 +1,7 @@
+function SBTM:IsTeamed(ply)
+    return ply:Team() >= SBTM_RED and ply:Team() <= SBTM_YEL
+end
+
 function SBTM:SetPlayerColor(ply, id)
     if GetConVar("sbtm_setplayercolor"):GetBool() and id >= SBTM_RED and id <= SBTM_YEL then
         local clr = team.GetColor(id)
@@ -64,7 +68,7 @@ function SBTM:SetNPCTeam(class, id)
                 end
             end
             for _, ply in pairs(player.GetAll()) do
-                if ply:Team() >= SBTM_RED and ply:Team() <= SBTM_YEL then
+                if SBTM:IsTeamed(ply) then
                     ent:AddEntityRelationship(ply, ply:Team() == id and D_LI or D_HT, 9999)
                 end
             end

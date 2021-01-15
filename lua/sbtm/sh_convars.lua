@@ -2,7 +2,6 @@ CreateConVar("sbtm_selfset", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED, "If enabled,
 CreateConVar("sbtm_selfset_balance", "1", FCVAR_ARCHIVE + FCVAR_REPLICATED, "If enabled, players cannot unbalance teams.", 0, 1)
 CreateConVar("sbtm_teamnpcs", "1", FCVAR_ARCHIVE + FCVAR_REPLICATED, "If enabled, admins can put NPCs into teams.", 0, 1)
 CreateConVar("sbtm_teamnpcs_color", "1", FCVAR_ARCHIVE + FCVAR_REPLICATED, "If enabled, NPCs with teams will be colored.", 0, 1)
-
 CreateConVar("sbtm_nofriendlyfire", "1", FCVAR_ARCHIVE, "If enabled, players on the same team cannot hurt each other.", 0, 1)
 CreateConVar("sbtm_neutralunassigned", "0", FCVAR_ARCHIVE, "If enabled, unassigned players and teamed players cannot hurt each other.", 0, 1)
 CreateConVar("sbtm_setplayercolor", "1", FCVAR_ARCHIVE, "If enabled, setting team also sets player color (not enforced).", 0, 1)
@@ -10,8 +9,11 @@ CreateConVar("sbtm_shuffle_max", "2", FCVAR_ARCHIVE, "The number of teams used w
 CreateConVar("sbtm_deathunassign", "0", FCVAR_ARCHIVE, "If enabled, teamed players who die becomes unassigned.", 0, 1)
 CreateConVar("sbtm_mapspawns", "1", FCVAR_ARCHIVE, "If enabled, automatically create team spawns if a map supports it.", 0, 1)
 CreateConVar("sbtm_assignonjoin", "0", FCVAR_ARCHIVE, "If enabled, players are auto-assigned a team on connection.", 0, 1)
+CreateConVar("sbtm_teamoutline", "1", FCVAR_ARCHIVE, "If enabled, players can see teammates through walls.", 0, 1)
 
-
+if CLIENT then
+    CreateConVar("cl_sbtm_teamoutline", "1", FCVAR_ARCHIVE, "Whether to show teammate outlines.", 0, 2)
+end
 
 concommand.Add("sbtm_shuffle", function(ply, cmd, args)
     if SERVER and (not IsValid(ply) or ply:IsAdmin()) then
