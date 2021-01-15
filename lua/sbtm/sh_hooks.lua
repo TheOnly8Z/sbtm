@@ -68,3 +68,57 @@ hook.Add("PlayerSpawn", "SBTM", function(ply)
         SBTM:SetPlayerColor(ply, ply:Team())
     end
 end)
+
+if SERVER then
+    SBTM.AssociatedSpawns = {
+        [SBTM_RED] = {
+            "info_player_rebel",
+            "info_player_terrorist",
+            "info_player_allies"
+        },
+        [SBTM_BLU] = {
+            "info_player_combine",
+            "info_player_counterterrorist",
+            "info_player_axis"
+        },
+        [0] = { -- uhhhhh this is awkward
+            "info_player_teamspawn"
+        }
+    }
+
+    function SBTM.LoadAssociatedSpawns()
+        if GetConVar("sbtm_mapspawns"):GetBool() then
+            for t, v in pairs(SBTM.AssociatedSpawns) do
+                for _, class in pairs(v) do
+                    local tbl = ents.FindByClass(class)
+                    for _, ent in pairs(tbl) do
+                        local spawn = ents.Create("sbtm_spawn")
+                        spawn:SetPos(ent:GetPos() + Vector(0, 0, 1))
+                        spawn:SetAngles(ent:GetAngles())
+                        spawn:Spawn()
+                        if t == 0 then
+                            spawn:SetTeam(ent:GetInternalVariable("TeamNum") + 99)
+                        else
+                            spawn:SetTeam(t)
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    hook.Add("InitPostEntity", "SBTM", SBTM.LoadAssociatedSpawns)
+    hook.Add("PostCleanupMap", "SBTM", SBTM.LoadAssociatedSpawns)
+
+    -- Hack from wiki
+    hook.Add( "PlayerInitialSpawn", "SBTM", function( p )
+        if GetConVar("sbtm_assignonjoin"):GetBool() then
+            hook.Add( "SetupMove", p, function( self, ply, _, cmd )
+                if self == ply and not cmd:IsForced() then
+                    SBTM:AutoAssign({ply})
+                    hook.Remove( "SetupMove", self )
+                end
+            end )
+        end
+    end )
+end

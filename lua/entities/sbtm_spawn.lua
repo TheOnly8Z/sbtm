@@ -5,6 +5,7 @@ ENT.Type = "anim"
 ENT.Category = "Fun + Games"
 ENT.Spawnable = not game.SinglePlayer()
 ENT.AdminOnly = true
+ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
 ENT.SBTM_TeamEntity = true
 
 function ENT:SetupDataTables()

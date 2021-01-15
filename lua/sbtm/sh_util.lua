@@ -76,8 +76,8 @@ function SBTM:SetNPCTeam(class, id)
     net.Broadcast()
 end
 
-function SBTM:Shuffle()
-    local plys = player.GetAll()
+function SBTM:Shuffle(plys)
+    plys = plys or player.GetAll()
     local t = 1
     while #plys > 0 do
         local i = math.random(1, #plys)
@@ -89,8 +89,8 @@ function SBTM:Shuffle()
     end
 end
 
-function SBTM:AutoAssign()
-    local plys = team.GetPlayers(TEAM_UNASSIGNED)
+function SBTM:AutoAssign(plys)
+    plys = plys or team.GetPlayers(TEAM_UNASSIGNED)
     while #plys > 0 do
         local index = math.random(1, #plys)
         -- Find the team with the minimum amount of players
