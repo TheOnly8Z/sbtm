@@ -26,6 +26,5 @@ for _, v in pairs(file.Find("sbtm/*", "LUA")) do
     end
 end
 
-if CLIENT then
-    include("includes/modules/outline.lua")
-end
+-- Outline library
+include("includes/modules/outline.lua")
