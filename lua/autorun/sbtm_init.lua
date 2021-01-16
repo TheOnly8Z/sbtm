@@ -28,3 +28,4 @@ end
 
 -- Outline library
 include("includes/modules/outline.lua")
+AddCSLuaFile("includes/modules/outline.lua")
