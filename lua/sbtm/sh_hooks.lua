@@ -117,12 +117,3 @@ if SERVER then
         end
     end )
 end
-
-hook.Add("PreDrawOutlines", "SBTM", function()
-    local cvar = GetConVar("cl_sbtm_teamoutline"):GetInt()
-    if cvar > 0 and SBTM:IsTeamed(LocalPlayer()) and (not SBMG or not SBMG:GameHasTag(SBMG_TAG_FORCE_FRIENDLY_FIRE)) and
-            (cvar == 1 or (SBMG and SBMG:GetActiveGame())) then
-        local plys = team.GetPlayers(LocalPlayer():Team())
-        outline.Add(plys, team.GetColor(LocalPlayer():Team()), OUTLINE_MODE_NOTVISIBLE)
-    end
-end)
