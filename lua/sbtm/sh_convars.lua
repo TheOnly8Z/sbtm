@@ -11,12 +11,6 @@ CreateConVar("sbtm_mapspawns", "1", FCVAR_ARCHIVE, "If enabled, automatically cr
 CreateConVar("sbtm_assignonjoin", "0", FCVAR_ARCHIVE, "If enabled, players are auto-assigned a team on connection.", 0, 1)
 CreateConVar("sbtm_teamoutline", "1", FCVAR_ARCHIVE, "If enabled, players can see teammates through walls.", 0, 1)
 
-if CLIENT then
-    CreateConVar("cl_sbtm_teamoutline", "1", FCVAR_ARCHIVE, "Whether to show teammate outlines.", 0, 2)
-    CreateConVar("cl_sbtm_teamoutline_mode", "1", FCVAR_ARCHIVE, "Which type of highlighting to use.", 0, 3)
-    CreateConVar("cl_sbtm_teamoutline_chevron", "1", FCVAR_ARCHIVE, "Draw a chevron over teammates' heads.", 0, 1)
-end
-
 concommand.Add("sbtm_shuffle", function(ply, cmd, args)
     if SERVER and (not IsValid(ply) or ply:IsAdmin()) then
         SBTM:Shuffle()
