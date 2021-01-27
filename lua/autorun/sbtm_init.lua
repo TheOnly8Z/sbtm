@@ -1,7 +1,35 @@
--- Why bother?
-if game.SinglePlayer() then return end
-
 AddCSLuaFile()
+
+-- Show a message telling the player to gtfo singleplayer
+if game.SinglePlayer() then
+
+    if CLIENT then
+        surface.CreateFont("Futura_Warn", {
+            font = "Futura-Bold",
+            size = 24,
+        })
+
+        list.Set( "DesktopWindows", "SBTM", {
+            title = "SBTM",
+            icon = "icon64/sbtm.png",
+            width		= 600,
+            height		= 200,
+            onewindow	= true,
+            init		= function( icon, window )
+                local panel = vgui.Create("DPanel", window)
+                panel:Dock(FILL)
+                local message = vgui.Create("DLabel", panel)
+                message:SetText(language.GetPhrase("sbtm.warnsp"))
+                message:SetFont("Futura_Warn")
+                message:SetTextColor(Color(0, 0, 0))
+                message:SetContentAlignment(5)
+                message:Dock(FILL)
+            end
+        })
+    end
+
+    return
+end
 
 SBTM = SBTM or {}
 SBTM.Spawns = SBTM.Spawns or {}
