@@ -75,7 +75,6 @@ hook.Add("PlayerSpawn", "SBTM", function(ply)
     end
 end)
 
-
 hook.Add("PhysgunPickup", "SBTM", function(ply, ent)
     if GetConVar("sbtm_nopickup"):GetBool() and ent.SBTM_NoPickup then return ply:IsAdmin() end
 end)
@@ -90,6 +89,15 @@ hook.Add("PlayerChangedTeam", "SBTM", function(ply, oldTeam, newTeam)
         ply:SetNoTarget(false)
         timer.Simple(0, function() ply:Spawn() end)
     end
+end)
+
+
+hook.Add("PlayerCanPickupWeapon", "SBTM", function(ply, wep)
+    if ply:Team() == TEAM_SPECTATOR then return false end
+end)
+
+hook.Add("AllowFlashlight", "SBTM", function(ply, wep)
+    if ply:Team() == TEAM_SPECTATOR then return false end
 end)
 
 -- Hack from wiki
