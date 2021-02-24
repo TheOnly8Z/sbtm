@@ -7,6 +7,7 @@ CreateConVar("sbtm_neutralunassigned", "0", FCVAR_ARCHIVE, "If enabled, unassign
 CreateConVar("sbtm_setplayercolor", "1", FCVAR_ARCHIVE, "If enabled, setting team also sets player color (not enforced).", 0, 1)
 CreateConVar("sbtm_shuffle_max", "2", FCVAR_ARCHIVE, "The number of teams used when shuffling players. Also used to consider team balance.", 2, 4)
 CreateConVar("sbtm_deathunassign", "0", FCVAR_ARCHIVE, "If enabled, teamed players who die becomes unassigned.", 0, 1)
+CreateConVar("sbtm_deathunassign_spec", "1", FCVAR_ARCHIVE, "If enabled, turn dead teamed players into spectators instead.", 0, 1)
 CreateConVar("sbtm_mapspawns", "1", FCVAR_ARCHIVE, "If enabled, automatically create team spawns if a map supports it.", 0, 1)
 CreateConVar("sbtm_assignonjoin", "0", FCVAR_ARCHIVE, "If enabled, players are auto-assigned a team on connection.", 0, 1)
 CreateConVar("sbtm_teamoutline", "1", FCVAR_ARCHIVE, "If enabled, players can see teammates through walls.", 0, 1)

@@ -14,7 +14,8 @@ end)
 
 hook.Add("PostPlayerDeath", "SBTM", function(ply)
     if (GetConVar("sbtm_deathunassign"):GetBool() or (SBMG and SBMG:GameHasTag(SBMG_TAG_UNASSIGN_ON_DEATH))) and SBTM:IsTeamed(ply) then
-        SBTM:SetTeam(ply, TEAM_UNASSIGNED, "#sbtm.hint.death_unassign")
+        local tgt = GetConVar("sbtm_deathunassign_spec"):GetBool() and TEAM_SPECTATOR or TEAM_UNASSIGNED
+        SBTM:SetTeam(ply, tgt, "#sbtm.hint.death_unassign")
     end
 end)
 
@@ -66,6 +67,41 @@ hook.Add("PlayerSpawn", "SBTM", function(ply)
     if GetConVar("sbtm_setplayercolor"):GetBool() then
         SBTM:SetPlayerColor(ply, ply:Team())
     end
+    if ply:Team() == TEAM_SPECTATOR then
+        timer.Simple(0, function()
+            ply:StripWeapons()
+            ply:Spectate(OBS_MODE_ROAMING)
+        end)
+    end
+end)
+
+
+hook.Add("PhysgunPickup", "SBTM", function(ply, ent)
+    if GetConVar("sbtm_nopickup"):GetBool() and ent.SBTM_NoPickup then return ply:IsAdmin() end
+end)
+
+hook.Add("PlayerChangedTeam", "SBTM", function(ply, oldTeam, newTeam)
+    if ply:Alive() and newTeam == TEAM_SPECTATOR then
+        ply:StripWeapons()
+        ply:Spectate(OBS_MODE_ROAMING)
+        ply:SetNoTarget(true)
+    elseif oldTeam == TEAM_SPECTATOR then
+        ply:UnSpectate()
+        ply:SetNoTarget(false)
+        timer.Simple(0, function() ply:Spawn() end)
+    end
+end)
+
+-- Hack from wiki
+hook.Add( "PlayerInitialSpawn", "SBTM", function(p)
+    if GetConVar("sbtm_assignonjoin"):GetBool() then
+        hook.Add( "SetupMove", p, function(self, ply, _, cmd)
+            if self == ply and not cmd:IsForced() then
+                SBTM:AutoAssign({ply})
+                hook.Remove("SetupMove", self)
+            end
+        end)
+    end
 end)
 
 if SERVER then
@@ -104,30 +140,4 @@ if SERVER then
 
     hook.Add("InitPostEntity", "SBTM", SBTM.LoadAssociatedSpawns)
     hook.Add("PostCleanupMap", "SBTM", SBTM.LoadAssociatedSpawns)
-
-    -- Hack from wiki
-    hook.Add( "PlayerInitialSpawn", "SBTM", function( p )
-        if GetConVar("sbtm_assignonjoin"):GetBool() then
-            hook.Add( "SetupMove", p, function( self, ply, _, cmd )
-                if self == ply and not cmd:IsForced() then
-                    SBTM:AutoAssign({ply})
-                    hook.Remove( "SetupMove", self )
-                end
-            end )
-        end
-    end )
-
-    hook.Add("PhysgunPickup", "SBTM", function(ply, ent)
-        if GetConVar("sbtm_nopickup"):GetBool() and ent.SBTM_NoPickup then return ply:IsAdmin() end
-    end)
-
-    hook.Add("PlayerChangedTeam", "SBTM", function(ply, oldTeam, newTeam)
-        if newTeam == TEAM_SPECTATOR then
-            ply:StripWeapons()
-            ply:Spectate(OBS_MODE_ROAMING)
-        elseif oldTeam == TEAM_SPECTATOR then
-            ply:UnSpectate()
-            ply:Spawn()
-        end
-    end)
 end
