@@ -99,23 +99,52 @@ list.Set( "DesktopWindows", "SBTM", {
         local left = vgui.Create("DPanel", window)
         left:SetSize(window:GetWide() * 0.3, window:GetTall())
         left:Dock(LEFT)
-        left:DockMargin(2, 2, 2, 2)
+        function left:Paint() end
 
-        local label_unassigned = vgui.Create("DLabel", left)
-        label_unassigned:SetSize(left:GetWide() * 0.5, window:GetTall() * 0.05)
+        local left_top = vgui.Create("DPanel", left)
+        left_top:SetSize(left:GetWide(), left:GetTall() * 0.6)
+        left_top:Dock(TOP)
+        left_top:DockMargin(2, 2, 2, 2)
+
+        local label_unassigned = vgui.Create("DLabel", left_top)
+        label_unassigned:SetSize(left_top:GetWide() * 0.5, window:GetTall() * 0.05)
         label_unassigned:SetText(team.GetName(TEAM_UNASSIGNED))
         label_unassigned:Dock(TOP)
         label_unassigned:SetFont("Futura_24")
         label_unassigned:SetTextColor(Color(0, 0, 0))
         label_unassigned:DockMargin(4, 4, 4, 4)
 
-        local btn_unassigned = vgui.Create("DButton", left)
-        btn_unassigned:SetSize(left:GetWide() * 0.3, window:GetTall() * 0.05)
-        btn_unassigned:SetPos(left:GetWide() * 0.7 - 4, 4)
+        local btn_unassigned = vgui.Create("DButton", left_top)
+        btn_unassigned:SetSize(left_top:GetWide() * 0.3, window:GetTall() * 0.06)
+        btn_unassigned:SetPos(left_top:GetWide() * 0.7 - 8, 4)
         btn_unassigned:SetFont("Futura_13")
 
-        local bottom = vgui.Create("DPanel", left)
-        bottom:SetSize(left:GetWide(), window:GetTall() * 0.08)
+        local left_bottom = vgui.Create("DPanel", left)
+        left_bottom:Dock(FILL)
+        left_bottom:DockMargin(2, 2, 2, 2)
+
+        local label_spectator = vgui.Create("DLabel", left_bottom)
+        label_spectator:SetSize(left_bottom:GetWide() * 0.5, window:GetTall() * 0.05)
+        label_spectator:SetText(team.GetName(TEAM_SPECTATOR))
+        label_spectator:Dock(TOP)
+        label_spectator:SetFont("Futura_18")
+        label_spectator:SetTextColor(Color(0, 0, 0))
+        label_spectator:DockMargin(4, 2, 4, 2)
+
+        local btn_spectator = vgui.Create("DButton", left_bottom)
+        btn_spectator:SetSize(left_top:GetWide() * 0.3, window:GetTall() * 0.05)
+        btn_spectator:SetPos(left_top:GetWide() * 0.7 - 8, 4)
+        btn_spectator:SetFont("Futura_13")
+
+        local list_spectator = vgui.Create("DListView", left_bottom)
+        list_spectator:Dock(FILL)
+        list_spectator:DockMargin(4, 4, 4, 4)
+        list_spectator:AddColumn(language.GetPhrase("sbtm.titlename"))
+        lists[TEAM_SPECTATOR] = list_spectator
+        populate(btn_spectator, list_spectator, TEAM_SPECTATOR)
+
+        local bottom = vgui.Create("DPanel", left_top)
+        bottom:SetSize(left_top:GetWide(), window:GetTall() * 0.08)
         bottom:Dock(BOTTOM)
 
         local btn_shuffle = vgui.Create("DButton", bottom)
@@ -150,7 +179,7 @@ list.Set( "DesktopWindows", "SBTM", {
         btn_assign:SetDisabled(not LocalPlayer():IsAdmin())
         btn_assign:SetFont("Futura_13")
 
-        local list_unassigned = vgui.Create("DListView", left)
+        local list_unassigned = vgui.Create("DListView", left_top)
         list_unassigned:Dock(FILL)
         list_unassigned:DockMargin(4, 4, 4, 4)
         list_unassigned:AddColumn(language.GetPhrase("sbtm.titlename"))

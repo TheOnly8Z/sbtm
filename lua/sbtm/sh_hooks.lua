@@ -120,4 +120,14 @@ if SERVER then
     hook.Add("PhysgunPickup", "SBTM", function(ply, ent)
         if GetConVar("sbtm_nopickup"):GetBool() and ent.SBTM_NoPickup then return ply:IsAdmin() end
     end)
+
+    hook.Add("PlayerChangedTeam", "SBTM", function(ply, oldTeam, newTeam)
+        if newTeam == TEAM_SPECTATOR then
+            ply:StripWeapons()
+            ply:Spectate(OBS_MODE_ROAMING)
+        elseif oldTeam == TEAM_SPECTATOR then
+            ply:UnSpectate()
+            ply:Spawn()
+        end
+    end)
 end
