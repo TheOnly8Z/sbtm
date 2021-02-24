@@ -4,8 +4,18 @@ SBTM.IconTable = {
     [SBTM_GRN] = "icon16/flag_green.png",
     [SBTM_YEL] = "icon16/flag_yellow.png",
     [TEAM_UNASSIGNED] = "icon16/delete.png",
-    --[TEAM_SPECTATOR] = "icon16/eye.png"
+    [TEAM_SPECTATOR] = "icon16/eye.png"
 }
+
+SBTM.IconMaterialTable = {
+    [SBTM_RED] = Material("icon16/flag_red.png"),
+    [SBTM_BLU] = Material("icon16/flag_blue.png"),
+    [SBTM_GRN] = Material("icon16/flag_green.png"),
+    [SBTM_YEL] = Material("icon16/flag_yellow.png"),
+    [TEAM_UNASSIGNED] = Material("icon16/delete.png"),
+    [TEAM_SPECTATOR] = Material("icon16/eye.png")
+}
+
 
 properties.Add("sbtm_setteam", {
     MenuLabel = "#sbtm.properties.set_team",

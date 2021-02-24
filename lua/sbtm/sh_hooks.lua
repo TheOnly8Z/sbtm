@@ -116,4 +116,8 @@ if SERVER then
             end )
         end
     end )
+
+    hook.Add("PhysgunPickup", "SBTM", function(ply, ent)
+        if GetConVar("sbtm_nopickup"):GetBool() and ent.SBTM_NoPickup then return ply:IsAdmin() end
+    end)
 end

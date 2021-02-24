@@ -189,3 +189,25 @@ list.Set( "DesktopWindows", "SBTM", {
         end
     end
 })
+
+hook.Add("HUDDrawScoreBoard", "SBTM", function()
+    if not g_Scoreboard or not g_Scoreboard:IsVisible() then return end
+    --[[]
+    for k, v in pairs(g_Scoreboard.Scores:GetChildren()) do
+        print(k, v:GetText())
+    end
+    ]]
+    local plyrs = player.GetAll()
+    local y = 100
+    for id, pl in pairs( plyrs ) do
+        if SBTM:IsTeamed(pl) then
+            local icon = SBTM.IconMaterialTable[pl:Team()]
+            if icon then
+                surface.SetDrawColor(255, 255, 255, 255)
+                surface.SetMaterial(icon)
+                surface.DrawTexturedRect(ScrW() / 2 - 350 - 16, 100 + y + 10, 16, 16)
+            end
+        end
+        y = y + 32 + 8
+    end
+end)

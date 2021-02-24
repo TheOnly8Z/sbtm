@@ -10,6 +10,8 @@ CreateConVar("sbtm_deathunassign", "0", FCVAR_ARCHIVE, "If enabled, teamed playe
 CreateConVar("sbtm_mapspawns", "1", FCVAR_ARCHIVE, "If enabled, automatically create team spawns if a map supports it.", 0, 1)
 CreateConVar("sbtm_assignonjoin", "0", FCVAR_ARCHIVE, "If enabled, players are auto-assigned a team on connection.", 0, 1)
 CreateConVar("sbtm_teamoutline", "1", FCVAR_ARCHIVE, "If enabled, players can see teammates through walls.", 0, 1)
+CreateConVar("sbtm_nopickup", "1", FCVAR_ARCHIVE, "If enabled, only admins can pickup SBTM and SBMG entities.", 0, 1)
+
 
 concommand.Add("sbtm_shuffle", function(ply, cmd, args)
     if SERVER and (not IsValid(ply) or ply:IsAdmin()) then
