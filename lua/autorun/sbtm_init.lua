@@ -1,5 +1,3 @@
-AddCSLuaFile()
-
 -- Show a message telling the player to gtfo singleplayer
 if game.SinglePlayer() then
 
@@ -28,8 +26,45 @@ if game.SinglePlayer() then
         })
     end
 
+    error("[SBTM] Refusing to load because game is in Singleplayer. SBTM only works in Listen and Dedicated servers!")
     return
 end
+
+-- Don't load in sandbox unless it's forced
+CreateConVar("sbtm_alwaysload", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED, "Load SBTM, even if the gamemode isn't sandbox?", 0, 1)
+if engine.ActiveGamemode() ~= "sandbox" and not GetConVar("sbtm_alwaysload"):GetBool() then
+
+    if CLIENT then
+        surface.CreateFont("Futura_Warn", {
+            font = "Futura-Bold",
+            size = 24,
+        })
+
+        list.Set( "DesktopWindows", "SBTM", {
+            title = "SBTM",
+            icon = "icon64/sbtm.png",
+            width		= 600,
+            height		= 200,
+            onewindow	= true,
+            init		= function( icon, window )
+                local panel = vgui.Create("DPanel", window)
+                panel:Dock(FILL)
+                local message = vgui.Create("DLabel", panel)
+                message:SetText(language.GetPhrase("sbtm.warngm"))
+                message:SetFont("Futura_Warn")
+                message:SetTextColor(Color(0, 0, 0))
+                message:SetContentAlignment(5)
+                message:Dock(FILL)
+                message:SetWrap(true)
+            end
+        })
+    end
+
+    error("[SBTM] Refusing to load because gamemode is not Sandbox. If you want to force load, use ConVar 'sbtm_alwaysload 1'.")
+    return
+end
+
+AddCSLuaFile()
 
 SBTM = SBTM or {}
 SBTM.Spawns = SBTM.Spawns or {}

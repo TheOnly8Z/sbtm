@@ -91,7 +91,6 @@ hook.Add("PlayerChangedTeam", "SBTM", function(ply, oldTeam, newTeam)
     end
 end)
 
-
 hook.Add("PlayerCanPickupWeapon", "SBTM", function(ply, wep)
     if ply:Team() == TEAM_SPECTATOR then return false end
 end)
