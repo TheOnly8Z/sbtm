@@ -26,7 +26,7 @@ if game.SinglePlayer() then
         })
     end
 
-    error("[SBTM] Refusing to load because game is in Singleplayer. SBTM only works in Listen and Dedicated servers!")
+    print("[SBTM] Refusing to load because game is in Singleplayer. SBTM only works in Listen and Dedicated servers!")
     return
 end
 
@@ -60,7 +60,7 @@ if engine.ActiveGamemode() ~= "sandbox" and not GetConVar("sbtm_alwaysload"):Get
         })
     end
 
-    error("[SBTM] Refusing to load because gamemode is not Sandbox. If you want to force load, use ConVar 'sbtm_alwaysload 1'.")
+    print("[SBTM] Refusing to load because gamemode is not Sandbox. If you want to force load, use ConVar 'sbtm_alwaysload 1'.")
     return
 end
 
