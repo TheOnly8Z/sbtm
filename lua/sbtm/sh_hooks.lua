@@ -1,6 +1,8 @@
 hook.Add("PlayerShouldTakeDamage", "SBTM", function(ply, atk)
     if IsValid(ply) and IsValid(atk) and atk:IsPlayer() then
-        if GetConVar("sbtm_nofriendlyfire"):GetBool() and ply:Team() == atk:Team() and ply ~= atk
+        if (GetConVar("sbtm_teamproperties"):GetBool() and not SBTM:GetTeamProperty(t, "teamdmg"))
+                or GetConVar("sbtm_nofriendlyfire"):GetBool()
+                and ply:Team() == atk:Team() and ply ~= atk
                 and SBTM:IsTeamed(ply) and SBTM:IsTeamed(atk)
                 and (not SBMG or not SBMG:GameHasTag(SBMG_TAG_FORCE_FRIENDLY_FIRE)) then
             return false
@@ -13,7 +15,8 @@ hook.Add("PlayerShouldTakeDamage", "SBTM", function(ply, atk)
 end)
 
 hook.Add("PostPlayerDeath", "SBTM", function(ply)
-    if (GetConVar("sbtm_deathunassign"):GetBool() or (SBMG and SBMG:GameHasTag(SBMG_TAG_UNASSIGN_ON_DEATH))) and SBTM:IsTeamed(ply) then
+    if ((GetConVar("sbtm_teamproperties"):GetBool() and SBTM:GetTeamProperty(t, "deathspec")) or GetConVar("sbtm_deathunassign"):GetBool()
+            or (SBMG and SBMG:GameHasTag(SBMG_TAG_UNASSIGN_ON_DEATH))) and SBTM:IsTeamed(ply) then
         local tgt = GetConVar("sbtm_deathunassign_spec"):GetBool() and TEAM_SPECTATOR or TEAM_UNASSIGNED
         SBTM:SetTeam(ply, tgt, "#sbtm.hint.death_unassign")
     end
@@ -44,59 +47,8 @@ hook.Add("OnEntityCreated", "SBTM", function(ent)
     end)
 end)
 
-hook.Add("PlayerSelectSpawn", "SBTM", function(ply)
-    local spawns = {}
-    for _, e in pairs(SBTM.Spawns) do
-        if e:GetTeam() == ply:Team() then
-            local tr = util.TraceHull({
-                start = e:GetPos(),
-                endpos = e:GetPos(),
-                maxs = Vector(16, 16, 72),
-                mins = Vector(-16, -16, 0),
-                filter = e
-            })
-            if not tr.Hit then
-                table.insert(spawns, e)
-            end
-        end
-    end
-    if #spawns > 0 then return spawns[math.random(1, #spawns)] end
-end)
-
-hook.Add("PlayerSpawn", "SBTM", function(ply)
-    if GetConVar("sbtm_setplayercolor"):GetBool() then
-        SBTM:SetPlayerColor(ply, ply:Team())
-    end
-    if ply:Team() == TEAM_SPECTATOR then
-        timer.Simple(0, function()
-            ply:StripWeapons()
-            ply:Spectate(OBS_MODE_ROAMING)
-        end)
-    end
-end)
-
 hook.Add("PhysgunPickup", "SBTM", function(ply, ent)
     if GetConVar("sbtm_nopickup"):GetBool() and ent.SBTM_NoPickup then return ply:IsAdmin() end
-end)
-
-hook.Add("PlayerChangedTeam", "SBTM", function(ply, oldTeam, newTeam)
-    if ply:Alive() and newTeam == TEAM_SPECTATOR then
-        ply:StripWeapons()
-        ply:Spectate(OBS_MODE_ROAMING)
-        ply:SetNoTarget(true)
-    elseif oldTeam == TEAM_SPECTATOR then
-        ply:UnSpectate()
-        ply:SetNoTarget(false)
-        timer.Simple(0, function() ply:Spawn() end)
-    end
-end)
-
-hook.Add("PlayerCanPickupWeapon", "SBTM", function(ply, wep)
-    if ply:Team() == TEAM_SPECTATOR then return false end
-end)
-
-hook.Add("AllowFlashlight", "SBTM", function(ply, wep)
-    if ply:Team() == TEAM_SPECTATOR then return false end
 end)
 
 -- Hack from wiki

@@ -28,3 +28,32 @@ net.Receive("SBTM_NPC", function()
         SBTM.NPCTeams[class] = id
     end
 end)
+
+net.Receive("SBTM_TeamPropertySet", function()
+    local t = net.ReadUInt(16)
+    local p = net.ReadString()
+    if not SBTM.TeamProperties[p] then return end
+    SBTM.TeamConfig[t] = SBTM.TeamConfig[t] or {}
+    SBTM.TeamConfig[t][p] = SBTM:ReadProperty(p)
+    --hook.Run("SBTM_UpdateConfigMenu")
+end)
+
+net.Receive("SBTM_TeamPropertyReset", function()
+    local t = net.ReadUInt(16)
+    local p = net.ReadString()
+    local prop = SBTM.TeamProperties[p]
+    if not prop then return end
+    SBTM.TeamConfig[t] = SBTM.TeamConfig[t] or {}
+    SBTM.TeamConfig[t][p] = nil
+    --hook.Run("SBTM_UpdateConfigMenu")
+end)
+
+net.Receive("SBTM_TeamPropertyUpdate", function()
+    SBTM.TeamConfig = net.ReadTable()
+end)
+
+hook.Add("InitPostEntity", "SBTM_TeamPropertyUpdate", function()
+    timer.Simple(1, function()
+        net.Start("SBTM_TeamPropertyUpdate") net.SendToServer()
+    end)
+end)

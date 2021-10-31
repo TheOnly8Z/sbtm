@@ -4,6 +4,9 @@ util.AddNetworkString("SBTM_Admin")
 util.AddNetworkString("SBTM_NPC")
 util.AddNetworkString("SBTM_Request")
 util.AddNetworkString("SBTM_Color")
+util.AddNetworkString("SBTM_TeamPropertySet")
+util.AddNetworkString("SBTM_TeamPropertyReset")
+util.AddNetworkString("SBTM_TeamPropertyUpdate")
 
 net.Receive("SBTM_Admin", function(len, ply)
     if not ply:IsAdmin() then return end
@@ -47,4 +50,51 @@ net.Receive("SBTM_Request", function(len, ply)
         end
     end
     SBTM:SetTeam(ply, id, "#sbtm.hint.team_set_self")
+end)
+
+local function broadcastproperty(t, p)
+    local prop = SBTM.TeamProperties[p]
+    if not prop then return end
+    local v = SBTM.TeamConfig[t][p]
+    if v == nil then
+        net.Start("SBTM_TeamPropertyReset")
+            net.WriteUInt(t, 16)
+            net.WriteString(p)
+        net.Broadcast()
+    else
+        net.Start("SBTM_TeamPropertySet")
+            net.WriteUInt(t, 16)
+            net.WriteString(p)
+            SBTM:WriteProperty(p, v)
+        net.Broadcast()
+    end
+end
+
+net.Receive("SBTM_TeamPropertySet", function(len, ply)
+    if not ply:IsAdmin() then return end
+    local t = net.ReadUInt(16)
+    local p = net.ReadString()
+    if not SBTM.TeamProperties[p] then return end
+    SBTM.TeamConfig[t] = SBTM.TeamConfig[t] or {}
+    SBTM.TeamConfig[t][p] = SBTM:ReadProperty(p)
+    broadcastproperty(t, p)
+end)
+
+net.Receive("SBTM_TeamPropertyReset", function(len, ply)
+    if not ply:IsAdmin() then return end
+    local t = net.ReadUInt(16)
+    local p = net.ReadString()
+    local prop = SBTM.TeamProperties[p]
+    if not prop then return end
+    SBTM.TeamConfig[t] = SBTM.TeamConfig[t] or {}
+    SBTM.TeamConfig[t][p] = nil
+    broadcastproperty(t, p)
+end)
+
+net.Receive("SBTM_TeamPropertyUpdate", function(len, ply)
+    if ply.SBTM_PropertyUpdated then return end
+    ply.SBTM_PropertyUpdated = true -- full update should only happen once on initialize
+    net.Start("SBTM_TeamPropertyUpdate")
+        net.WriteTable(SBTM.TeamConfig) -- lmao
+    net.Send(ply)
 end)

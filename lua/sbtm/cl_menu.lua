@@ -219,6 +219,180 @@ list.Set( "DesktopWindows", "SBTM", {
     end
 })
 
+local function valid_lang(str)
+    return language.GetPhrase(str) ~= str
+end
+
+local options = {}
+local function populate_options(layout, t)
+    for k, v in pairs(options) do
+        if IsValid(v) and IsValid(v:GetParent()) then
+            v:GetParent():Remove()
+        end
+    end
+    options = {}
+
+    -- Attempt to find last saved option set
+    local last_options = SBTM.TeamConfig[t] or {}
+    local fallback = SBTM.TeamConfig[0] or {}
+    --[[]
+    if file.Exists("sbtm_teamconfig.txt", "DATA") then
+        last_options = util.JSONToTable(file.Read("sbtm_teamconfig.txt", "DATA"))
+    end
+    ]]
+
+    for k, v in SortedPairsByMemberValue(SBTM.TeamProperties, "so") do
+        local parent = vgui.Create("DPanel", layout)
+        parent:SetSize(layout:GetWide(), 24)
+        if valid_lang("sbtm.team." .. k .. ".desc") then
+            parent:SetTooltip(language.GetPhrase("sbtm.team." .. k .. ".desc"))
+        end
+        parent.Paint = function(pnl, w, h)
+            draw.SimpleText(language.GetPhrase("sbtm.team." .. k), "Futura_13", 4, h / 2, Color(0, 0, 0), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        end
+        local reset = vgui.Create("DImageButton", parent)
+        if v.type == "i" then
+            options[k] = vgui.Create("DNumberWang", parent)
+            options[k]:SetPos(layout:GetWide() - 16 - 64 - 8, (24 - 15) / 2)
+            options[k]:SetFraction(0)
+            options[k]:SetMinMax(v.min, v.max)
+            options[k]:SetValue(last_options[k] or fallback[k] or v.default)
+            options[k].OnValueChanged = function(pnl, val)
+                net.Start("SBTM_TeamPropertySet")
+                    net.WriteUInt(t, 16)
+                    net.WriteString(k)
+                    net.WriteUInt(val, 32)
+                net.SendToServer()
+                reset:SetDisabled(false)
+            end
+        elseif v.type == "b" then
+            options[k] = vgui.Create("DCheckBox", parent)
+            options[k]:SetPos(layout:GetWide() - 16 - 15 - 8, (24 - 15) / 2)
+            options[k]:SetChecked(last_options[k] or fallback[k] or v.default)
+            options[k].OnChange = function(pnl, val)
+                net.Start("SBTM_TeamPropertySet")
+                    net.WriteUInt(t, 16)
+                    net.WriteString(k)
+                    net.WriteBool(val)
+                net.SendToServer()
+                reset:SetDisabled(false)
+            end
+        elseif v.type == "f" then
+            options[k] = vgui.Create("DNumSlider", parent)
+            options[k]:Dock(FILL)
+            options[k]:SetDecimals(v.decimals or 2)
+            options[k]:SetMinMax(v.min or 0, v.max or 1)
+            options[k]:SetValue(last_options[k] or fallback[k] or v.default)
+            options[k].OnValueChanged = function(pnl, val)
+                net.Start("SBTM_TeamPropertySet")
+                    net.WriteUInt(t, 16)
+                    net.WriteString(k)
+                    net.WriteFloat(val)
+                net.SendToServer()
+                reset:SetDisabled(false)
+            end
+        end
+        reset:SetPos(layout:GetWide() - 18, (24 - 15) / 2)
+        reset:SetSize(16, 16)
+        reset:SetImage("icon16/arrow_rotate_clockwise.png")
+        reset:SetDisabled((SBTM.TeamConfig[t] or {})[k] == nil)
+        reset.DoClick = function(self)
+            net.Start("SBTM_TeamPropertyReset")
+                net.WriteUInt(t, 16)
+                net.WriteString(k)
+            net.SendToServer()
+            if v.type == "i" or v.type == "f" then
+                options[k]:SetValue(v.default)
+            elseif v.type == "b" then
+                options[k]:SetChecked(v.default)
+            end
+            self:SetDisabled(true)
+        end
+    end
+end
+
+SBTM.TeamConfigPanel = nil
+local function config_window(p)
+    if SBTM.TeamConfigPanel then SBTM.TeamConfigPanel:Remove() end
+
+    if p then
+        SBTM.TeamConfigPanel = p
+    else
+        SBTM.TeamConfigPanel = vgui.Create("DFrame", g_ContextMenu)
+        SBTM.TeamConfigPanel:SetSize(300, 480)
+        SBTM.TeamConfigPanel:Center()
+        SBTM.TeamConfigPanel:MakePopup()
+    end
+    local window = SBTM.TeamConfigPanel
+
+    window:SetTitle( "#sbtm.team.config" )
+    window:SetSize( math.min( ScrW() - 16, window:GetWide() ), math.min( ScrH() - 16, window:GetTall() ) )
+    window:SetMinWidth( window:GetWide() )
+    window:SetMinHeight( window:GetTall() )
+    window:Center()
+
+    local title = vgui.Create("DPanel", window)
+    title:Dock(TOP)
+    title:SetTall(24)
+    title.Paint = function(pnl, w, h)
+        draw.SimpleTextOutlined("Team Properties", "Futura_24", 4, 4, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 1, Color(0, 0, 0))
+    end
+
+    local dropdown = vgui.Create("DComboBox", title)
+    dropdown:SetWidth(96)
+    dropdown:Dock(RIGHT)
+    dropdown:SetSortItems(false)
+    dropdown:AddChoice("#sbtm.team.allplayers", 0, true, "icon16/box.png")
+    dropdown:AddChoice(team.GetName(TEAM_UNASSIGNED), TEAM_UNASSIGNED, false, "icon16/help.png")
+    for k = SBTM_RED, SBTM_YEL do
+        dropdown:AddChoice(team.GetName(k), k, false, SBTM.IconTable[k])
+    end
+
+    local panel = vgui.Create("DPanel", window)
+    panel:Dock(FILL)
+    panel:DockMargin(4, 4, 4, 4)
+    panel:InvalidateParent(true)
+
+    local optionlayout = vgui.Create("DIconLayout", panel)
+    optionlayout:Dock(FILL)
+    optionlayout:InvalidateParent(true)
+    --optionlayout:DockMargin(0, 0, 0, 0)
+    optionlayout:SetLayoutDir(LEFT)
+    SBTM.TeamConfigPanel.layout = optionlayout
+    populate_options(optionlayout, 0)
+
+    --[[]
+    title.Paint = function(pnl, w, h)
+        local _, data = dropdown:GetSelected()
+        local str = (data == 0 and "#sbtm.team.allplayers") or team.GetName(data)
+        local clr = (data == 0 and color_white) or team.GetColor(data)
+        draw.SimpleTextOutlined(str, "Futura_24", 4, 4, clr, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 1, Color(0, 0, 0))
+    end
+    ]]
+    function dropdown:OnSelect(i, txt, t)
+        title:SetText(txt)
+        window.team = t
+        populate_options(optionlayout, t)
+    end
+    window.team = 0
+end
+hook.Add("SBTM_UpdateConfigMenu", "SBTM", function()
+    if SBTM.TeamConfigPanel then
+        populate_options(SBTM.TeamConfigPanel.layout, SBTM.TeamConfigPanel.team)
+    end
+end)
+
+list.Set( "DesktopWindows", "SBTM_Config", {
+    title = "Team Config",
+    icon = "icon64/sbtm_config.png",
+    width		= 300,
+    height		= 480,
+    onewindow	= true,
+    init		= function( icon, window )
+        config_window(window)
+    end
+})
+
 hook.Add("HUDDrawScoreBoard", "SBTM", function()
     if not g_Scoreboard or not g_Scoreboard:IsVisible() then return end
     --[[]

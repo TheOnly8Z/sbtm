@@ -137,3 +137,45 @@ function SBTM:ConVarTeamColor(t)
     clr.b = GetConVar(cvar .. "_b"):GetInt()
     return clr
 end
+
+function SBTM:GetTeamProperty(t, prop)
+    if not prop or not self.TeamProperties[prop] then
+        error("SBTM: Tried to get invalid team property '" .. tostring(prop) .. "'!")
+        return
+    end
+    if self.TeamConfig[t] and self.TeamConfig[t][prop] ~= nil then
+        return self.TeamConfig[t][prop]
+    end
+    if self.TeamConfig[0] and self.TeamConfig[0][prop] ~= nil then
+        return self.TeamConfig[0][prop]
+    end
+    return self.TeamProperties[prop].default
+end
+
+function SBTM:WriteProperty(p, v)
+    local prop = SBTM.TeamProperties[p]
+    if not prop then return end
+    if prop.type == "b" then
+        net.WriteBool(v)
+    elseif prop.type == "i" then
+        net.WriteInt(v, 32)
+    elseif prop.type == "f" then
+        net.WriteFloat(v)
+    elseif prop.type == "s" then
+        net.WriteString(v)
+    end
+end
+
+function SBTM:ReadProperty(p)
+    local prop = SBTM.TeamProperties[p]
+    if not prop then return end
+    if prop.type == "b" then
+        return net.ReadBool()
+    elseif prop.type == "i" then
+        return math.Clamp(net.ReadInt(32), prop.min or -math.huge, prop.max or math.huge)
+    elseif prop.type == "f" then
+        return math.Clamp(net.ReadFloat(), prop.min or -math.huge, prop.max or math.huge)
+    elseif prop.type == "s" then
+        return net.ReadString()
+    end
+end
