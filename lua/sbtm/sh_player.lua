@@ -16,6 +16,7 @@ hook.Add("PlayerSpawn", "SBTM", function(ply)
             ply:SetArmor(SBTM:GetTeamProperty(t, "armor"))
             ply:SetWalkSpeed(SBTM:GetTeamProperty(t, "walkspeed"))
             ply:SetRunSpeed(SBTM:GetTeamProperty(t, "runspeed"))
+            ply:SetSlowWalkSpeed(SBTM:GetTeamProperty(t, "slowwalkspeed"))
             ply:SetJumpPower(SBTM:GetTeamProperty(t, "jumppower"))
         end)
     end

@@ -28,7 +28,8 @@ SBTM.TeamProperties = {
     ["armor"]     = {so = 5, type = "i", min = 0, max = 255, default = 0},
     ["walkspeed"] = {so = 6, type = "i", min = 0, default = 200},
     ["runspeed"]  = {so = 7, type = "i", min = 0, default = 400},
-    ["jumppower"] = {so = 8, type = "i", min = 0, default = 200},
+    ["slowwalkspeed"] = {so = 8, type = "i", min = 0, default = 100},
+    ["jumppower"] = {so = 9, type = "i", min = 0, default = 200},
 }
 SBTM.TeamConfig = {
     --[team_id] = {prop = val, prop2 = val2},
