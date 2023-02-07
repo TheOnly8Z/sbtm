@@ -75,6 +75,10 @@ SBTM_BLU = 102
 SBTM_GRN = 103
 SBTM_YEL = 104
 
+-- Team color modifiers
+SBTM_TCLR_NONE = 0
+SBTM_TCLR_SOFT = 1
+
 for _, v in pairs(file.Find("sbtm/*", "LUA")) do
     if string.Left(v, 3) == "cl_" then
         AddCSLuaFile("sbtm/" .. v)

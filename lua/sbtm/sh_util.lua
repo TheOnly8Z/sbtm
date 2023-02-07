@@ -138,6 +138,24 @@ function SBTM:ConVarTeamColor(t)
     return clr
 end
 
+local tcc = {}
+function SBTM:TeamColor(t, modifier)
+    if t:IsPlayer() then t = t:Team() end
+    if not team.Valid(t) then return Color(255, 255, 255) end
+
+    if not tcc[t] then tcc[t] = {} end
+    if not tcc[t][modifier] then
+        tcc[t][modifier] = team.GetColor(t)
+        if modifier == SBTM_TCLR_SOFT then
+            tcc[t][modifier].r = (tcc[t][modifier].r * 0.5) + (255 * 0.5)
+            tcc[t][modifier].g = (tcc[t][modifier].g * 0.5) + (255 * 0.5)
+            tcc[t][modifier].b = (tcc[t][modifier].b * 0.5) + (255 * 0.5)
+        end
+    end
+
+    return tcc[t][modifier]
+end
+
 function SBTM:GetTeamProperty(t, prop)
     if not prop or not self.TeamProperties[prop] then
         error("SBTM: Tried to get invalid team property '" .. tostring(prop) .. "'!")
