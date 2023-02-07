@@ -1,7 +1,8 @@
 hook.Add("PlayerShouldTakeDamage", "SBTM", function(ply, atk)
     if IsValid(ply) and IsValid(atk) and atk:IsPlayer() then
-        if (GetConVar("sbtm_teamproperties"):GetBool() and not SBTM:GetTeamProperty(t, "teamdmg"))
-                or GetConVar("sbtm_nofriendlyfire"):GetBool()
+        local t = atk:Team()
+        if ((GetConVar("sbtm_teamproperties"):GetBool() and SBTM:GetTeamProperty(t, "teamdmg") ~= true)
+                or GetConVar("sbtm_nofriendlyfire"):GetBool())
                 and ply:Team() == atk:Team() and ply ~= atk
                 and SBTM:IsTeamed(ply) and SBTM:IsTeamed(atk)
                 and (not SBMG or not SBMG:GameHasTag(SBMG_TAG_FORCE_FRIENDLY_FIRE)) then
@@ -15,6 +16,7 @@ hook.Add("PlayerShouldTakeDamage", "SBTM", function(ply, atk)
 end)
 
 hook.Add("PostPlayerDeath", "SBTM", function(ply)
+    local t = ply:Team()
     if ((GetConVar("sbtm_teamproperties"):GetBool() and SBTM:GetTeamProperty(t, "deathspec")) or GetConVar("sbtm_deathunassign"):GetBool()
             or (SBMG and SBMG:GameHasTag(SBMG_TAG_UNASSIGN_ON_DEATH))) and SBTM:IsTeamed(ply) then
         local tgt = GetConVar("sbtm_deathunassign_spec"):GetBool() and TEAM_SPECTATOR or TEAM_UNASSIGNED
