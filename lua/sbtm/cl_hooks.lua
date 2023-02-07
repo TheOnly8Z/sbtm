@@ -27,11 +27,11 @@ hook.Add("PreDrawHalos", "SBTM", function()
         if SBTM:IsTeamed(LocalPlayer()) then
             local c = team.GetColor(LocalPlayer():Team())
             for _, p in pairs(team.GetPlayers(LocalPlayer():Team())) do
-                if p:Alive() and p ~= LocalPlayer() then halo.Add(p, c, 4, 4, 1, true, true) end
+                if p:Alive() and p ~= LocalPlayer() then halo.Add({p}, c, 4, 4, 1, true, true) end
             end
         elseif LocalPlayer():Team() == TEAM_SPECTATOR then
             for _, p in pairs(player.GetAll()) do
-                if p:Alive() then halo.Add(p, p:Team() == TEAM_UNASSIGNED and color_white or team.GetColor(p:Team()), 4, 4, 1, true, true) end
+                if p:Alive() then halo.Add({p}, p:Team() == TEAM_UNASSIGNED and color_white or team.GetColor(p:Team()), 4, 4, 1, true, true) end
             end
         end
     end
