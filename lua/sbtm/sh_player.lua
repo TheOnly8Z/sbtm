@@ -67,7 +67,7 @@ hook.Add("AllowFlashlight", "SBTM", function(ply, wep)
 end)
 
 hook.Add("PlayerNoClip", "SBTM", function(ply, state)
-    if GetConVar("sbtm_teamproperties"):GetBool() and not state and not SBTM:GetTeamProperty(t, "noclip") then
+    if GetConVar("sbtm_teamproperties"):GetBool() and not state and not SBTM:GetTeamProperty(ply:Team(), "noclip") then
         return false
     end
 end)
