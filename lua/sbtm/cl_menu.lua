@@ -268,7 +268,13 @@ local function populate_options(layout, t)
         elseif v.type == "b" then
             options[k] = vgui.Create("DCheckBox", parent)
             options[k]:SetPos(layout:GetWide() - 16 - 15 - 8, (24 - 15) / 2)
-            options[k]:SetChecked(last_options[k] or fallback[k] or v.default)
+            local checked = v.default
+            if last_options[k] ~= nil then
+                checked = last_options[k]
+            elseif fallback[k] ~= nil then
+                checked = fallback[k]
+            end
+            options[k]:SetChecked(checked)
             options[k].OnChange = function(pnl, val)
                 net.Start("SBTM_TeamPropertySet")
                     net.WriteUInt(t, 16)
