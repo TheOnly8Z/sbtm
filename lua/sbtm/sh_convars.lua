@@ -13,6 +13,7 @@ CreateConVar("sbtm_assignonjoin", "0", FCVAR_ARCHIVE, "If enabled, players are a
 CreateConVar("sbtm_teamoutline", "1", FCVAR_ARCHIVE, "If enabled, players can see teammates through walls.", 0, 1)
 CreateConVar("sbtm_nopickup", "1", FCVAR_ARCHIVE, "If enabled, only admins can pickup SBTM and SBMG entities.", 0, 1)
 CreateConVar("sbtm_teamproperties", "1", FCVAR_ARCHIVE, "Apply team properties.", 0, 1)
+CreateConVar("sbtm_teamproperties_adminoverride", "0", FCVAR_ARCHIVE, "Admins ignore spawning, noclip and weapon restrictions for the team they're in.", 0, 1)
 
 
 concommand.Add("sbtm_shuffle", function(ply, cmd, args)

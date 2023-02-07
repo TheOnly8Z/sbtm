@@ -67,7 +67,57 @@ hook.Add("AllowFlashlight", "SBTM", function(ply, wep)
 end)
 
 hook.Add("PlayerNoClip", "SBTM", function(ply, state)
-    if GetConVar("sbtm_teamproperties"):GetBool() and state and not SBTM:GetTeamProperty(ply:Team(), "noclip") then
+    if GetConVar("sbtm_teamproperties"):GetBool() and state and not SBTM:GetTeamProperty(ply:Team(), "noclip") and (not GetConVar("sbtm_teamproperties_adminoverride"):GetBool() or not ply:IsAdmin()) then
         return false
     end
 end)
+
+hook.Add("PhysgunPickup", "SBTM", function(ply, ent)
+    if GetConVar("sbtm_nopickup"):GetBool() and ent.SBTM_NoPickup then return ply:IsAdmin() end
+    if (GetConVar("sbtm_teamproperties"):GetBool() and not SBTM:GetTeamProperty(ply:Team(), "physgun")) and (not GetConVar("sbtm_teamproperties_adminoverride"):GetBool() or not ply:IsAdmin()) then
+        return false
+    end
+end)
+
+hook.Add("CanTool", "SBTM", function(ply, ent)
+    if GetConVar("sbtm_nopickup"):GetBool() and ent.SBTM_NoPickup then return ply:IsAdmin() end
+    if (GetConVar("sbtm_teamproperties"):GetBool() and not SBTM:GetTeamProperty(ply:Team(), "toolgun")) and (not GetConVar("sbtm_teamproperties_adminoverride"):GetBool() or not ply:IsAdmin()) then
+        if SERVER then
+            SBTM:Hint(ply, "#sbtm.hint.permission_toolgun", NOTIFY_ERROR)
+        end
+        return false
+    end
+end)
+
+local function sweplimit(ply, class, swep)
+    if not GetConVar("sbtm_teamproperties"):GetBool() or (GetConVar("sbtm_teamproperties_adminoverride"):GetBool() and ply:IsAdmin()) then return end
+
+    if class == "weapon_physgun" and not SBTM:GetTeamProperty(ply:Team(), "physgun") then
+        SBTM:Hint(ply, "#sbtm.hint.permission_physgun", NOTIFY_ERROR)
+        return false
+    end
+    if class == "gmod_tool" and not SBTM:GetTeamProperty(ply:Team(), "toolgun") then
+        SBTM:Hint(ply, "#sbtm.hint.permission_toolgun", NOTIFY_ERROR)
+        return false
+    end
+    if not SBTM:GetTeamProperty(ply:Team(), "spawngun") then
+        SBTM:Hint(ply, "#sbtm.hint.permission_spawn", NOTIFY_ERROR)
+        return false
+    end
+end
+hook.Add("PlayerSpawnSWEP", "SBTM", sweplimit)
+hook.Add("PlayerGiveSWEP", "SBTM", sweplimit)
+
+local function makethinglimit(hookname, prop)
+    hook.Add(hookname, "SBTM", function(ply)
+        if not GetConVar("sbtm_teamproperties"):GetBool() or (GetConVar("sbtm_teamproperties_adminoverride"):GetBool() and ply:IsAdmin()) then return end
+        if not SBTM:GetTeamProperty(ply:Team(), prop) then
+            SBTM:Hint(ply, "#sbtm.hint.permission_spawn", NOTIFY_ERROR)
+            return false
+        end
+    end)
+end
+makethinglimit("PlayerSpawnObject", "spawnprop")
+makethinglimit("PlayerSpawnSENT", "spawnent")
+makethinglimit("PlayerSpawnNPC", "spawnnpc")
+makethinglimit("PlayerSpawnVehicle", "spawnveh")

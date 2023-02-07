@@ -16,8 +16,7 @@ hook.Add("PlayerShouldTakeDamage", "SBTM", function(ply, atk)
 end)
 
 hook.Add("PostPlayerDeath", "SBTM", function(ply)
-    local t = ply:Team()
-    if ((GetConVar("sbtm_teamproperties"):GetBool() and SBTM:GetTeamProperty(t, "deathspec")) or GetConVar("sbtm_deathunassign"):GetBool()
+    if ((GetConVar("sbtm_teamproperties"):GetBool() and SBTM:GetTeamProperty(ply:Team(), "deathspec")) or GetConVar("sbtm_deathunassign"):GetBool()
             or (SBMG and SBMG:GameHasTag(SBMG_TAG_UNASSIGN_ON_DEATH))) and SBTM:IsTeamed(ply) then
         local tgt = GetConVar("sbtm_deathunassign_spec"):GetBool() and TEAM_SPECTATOR or TEAM_UNASSIGNED
         SBTM:SetTeam(ply, tgt, "#sbtm.hint.death_unassign")
@@ -47,10 +46,6 @@ hook.Add("OnEntityCreated", "SBTM", function(ent)
             end
         end
     end)
-end)
-
-hook.Add("PhysgunPickup", "SBTM", function(ply, ent)
-    if GetConVar("sbtm_nopickup"):GetBool() and ent.SBTM_NoPickup then return ply:IsAdmin() end
 end)
 
 -- Hack from wiki

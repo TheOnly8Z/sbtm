@@ -244,7 +244,9 @@ local function populate_options(layout, t)
     for k, v in SortedPairsByMemberValue(SBTM.TeamProperties, "so") do
         local parent = vgui.Create("DPanel", layout)
         parent:SetSize(layout:GetWide(), 24)
-        if valid_lang("sbtm.team." .. k .. ".desc") then
+        if k.ao then
+            parent:SetTooltip(language.GetPhrase("sbtm.team.adminoverride"))
+        elseif valid_lang("sbtm.team." .. k .. ".desc") then
             parent:SetTooltip(language.GetPhrase("sbtm.team." .. k .. ".desc"))
         end
         parent.Paint = function(pnl, w, h)
@@ -340,9 +342,6 @@ local function config_window(p)
     local title = vgui.Create("DPanel", window)
     title:Dock(TOP)
     title:SetTall(24)
-    title.Paint = function(pnl, w, h)
-        draw.SimpleTextOutlined("Team Properties", "Futura_24", 4, 4, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 1, Color(0, 0, 0))
-    end
 
     local dropdown = vgui.Create("DComboBox", title)
     dropdown:SetWidth(96)
@@ -352,6 +351,12 @@ local function config_window(p)
     dropdown:AddChoice(team.GetName(TEAM_UNASSIGNED), TEAM_UNASSIGNED, false, "icon16/help.png")
     for k = SBTM_RED, SBTM_YEL do
         dropdown:AddChoice(team.GetName(k), k, false, SBTM.IconTable[k])
+    end
+
+    title.Paint = function(pnl, w, h)
+        local _, s = dropdown:GetSelected()
+        local c = (s == TEAM_UNASSIGNED or s == 0) and color_white or team.GetColor(s)
+        draw.SimpleTextOutlined("Team Properties", "Futura_24", 4, 0, c, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 1, Color(0, 0, 0))
     end
 
     local panel = vgui.Create("DPanel", window)
